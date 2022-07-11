@@ -45,3 +45,128 @@ The type declaration is followed by the defining equations, i.e. the mapping rul
 ```haskell
 square x = x * x
 ```
+
+The left side of a defining equation consists of the name of the function and the description of the argument and the right side defines the result of the function. Here the types of the arguments and the results must naturally "fit" the type of the function (i.e., `square` may only get expressions of the type `Int` both as argument and as result). Basic arithmetic operations like `+`, `*`, `-`, `/`, etc. as well as comparison operations like `==` (for equality), `>=`, etc. are predefined in Haskell. The data structure `Bool` with the values `True` and `False` and the functions `not`, `&&` and `||` is also predefined. Libraries are used to define such frequently used functions. The functions mentioned above are defined in a standard library (the so-called "prelude"), which is loaded every time Haskell is started. In general, function declarations are structured as follows.
+
+$\text{\underline{fundecl}} \rightarrow \text{\underline{funlhs} } \text{\underline{rhs}}$
+
+$\text{\underline{funlhs}} \rightarrow \text{\underline{var} } \text{\underline{pat}}$
+
+$\text{\underline{rhs}} \rightarrow \text{= \underline{exp}}$
+
+Here `var` stands for the function name (like `square`) and `pat` for the argument on the left side of the defining equation (like `x`). How such arguments may look in the general case is explained in Section 1.1.3. The right side of a defining equation is an arbitrary expression `exp` (like `x * x`).
+
+#### Exporting a Functional Program
+
+The execution of a program consists of the evaluation of expressions. This is done similarly to a pocket calculator: The user enters an expression (with an interpreter) and the calculator evaluates it. For example, if you enter $42$, the result will be $42$. If you enter `6 * 7`, the result is also $42$, because the operation `*` is predefined. But in the same way the user-defined declarations are used for the evaluation. Thus, when `square 11` is entered, the result $121$ is obtained, and the same result is obtained when `square (12 - 1)` is entered. The binding priority of the function application is the highest here, i.e., if `square 12 - 1` is entered, $143$ is obtained.
+
+The evaluation of an expression is done by term substitution in two steps:
+
+  $(1)$ The computer searches for a subexpression that matches the left-hand side of a defining equation, replacing the variables of the left-hand side with suitable expressions. Such a partial expression is called a *Redex* (for "reducible expression").
+
+  $(2)$ The Redex is replaced by the right-hand side of the defining equation, where the variables in the right-hand side must be assigned exactly as in $(1)$.
+
+These evaluation steps are repeated until no more replacement step is possible.
+
+In Fig. 1.1 all possibilities for the evaluation of the expression `square (12 - 1)` are shown. Each path through the diagram corresponds to a possible sequence of evaluation steps. An evaluation strategy is an algorithm for selecting the next Redex.
+
+![Figure 1.1: Evaluation of an expression](../images/figure1-1.png)
+Figure 1.1: Evaluation of an expression
+
+In particular, we distinguish between strict and non-strict evaluation. In strict evaluation, the leftmost innermost Redex in the expression is always chosen. This corresponds to the leftmost path through the diagram in Fig. 1.1. This strategy is also called leftmost innermost or call-by-value strategy or eager evaluation.
+
+In the case of non-strict evaluation, the redex occurring furthest to the left in the expression is selected. The arguments of functions are now usually unevaluated expressions. This corresponds to the middle path through the diagram in Fig. 1.1. This strategy is also called leftmost outermost or call-by-name strategy.
+
+Both strategies have advantages and disadvantages. In the non-strict evaluation, only the subexpressions whose value contributes to the final result are evaluated, which is not the case in the strict evaluation. On the other hand, the non-strict strategy sometimes has to evaluate the same value several times, although this is not necessary in the strict strategy (this happens here with the partial expression `12 - 1`).
+
+Haskell follows the principle of the so-called lazy evaluation, which tries to combine both advantages. Here the non-strict evaluation is pursued, but duplicate partial expressions are not evaluated twice if they have arisen from the same origin term. In the above example, the partial term `12 - 1`, for example, was realized by a pointer to the same memory cell and thus evaluated only once.
+
+Comparing the evaluation strategies, we get the following important result: If any evaluation strategy terminates, the non-strict evaluation also terminates (but not necessarily the strict evaluation). Moreover, it is true for all strategies: When the evaluation terminates, the result is the same regardless of the strategy. Thus, the strategies only affect the termination behavior, but not the result. As an example we consider the following functions.
+
+```haskell
+three :: Int -> Int
+three x = 3
+
+non_term :: Int -> Int
+non_term x = non_term (x+1)
+```
+
+The evaluation of the function `non_term` does not terminate for any argument. The strict evaluation of the expression `three (non_term 0)` therefore also did not terminate. In Haskell, however, this expression evaluates to result $3$. We will learn more advantages of the non-strict strategy later in Section 1.3.
+
+#### Conditional Defining Equations
+
+Naturally, one also wants to use multi-digit functions and conditional defining equations. For this we consider a function `maxi` with the following type declaration.
+
+```haskell
+maxi :: (Int, Int) -> Int
+```
+
+Here `(Int, Int)` denotes the Cartesian product of the types `Int` and `Int` (this thus corresponds to the mathematical notation `Int × Int`). `(Int, Int) -> Int` is therefore the type of functions that map pairs of integers to integers. The function declaration of `maxi` is as follows.
+
+```haskell
+maxi(x, y) | x >= y    = x
+           | otherwise = y
+```
+
+The expression on the right side of a defining equation can thus be restricted by a condition (i.e. an expression of the type `Bool`). For evaluation, one then uses the first equation whose condition is satisfied (but the case distinction in the equations need not be complete). The expression `otherwise` is a predefined function that always returns `True`. So the grammar rule for the formation of right sides of $\text{\underline{rhs}}$ defining equations must now be changed as follows:
+
+$\text{\underline{rhs}} \rightarrow \text{= \underline{exp} }_1 \ldots \text{ \underline{exp} }_n \text{, where } n \geq 1$
+
+$\text{\underline{condrhs}} \rightarrow \text{| \underline{exp} = \underline{exp}}$
+
+#### Currying
+
+To reduce the number of parentheses in expressions (and thus improve readability), one often replaces tuples of arguments with a sequence of arguments. This technique is named after the logician *Haskell B. Curry*, whose first name was already used for the name of the programming language Haskell. To illustrate this, let us first consider a conventional definition of the function `plus`.
+
+```haskell
+plus :: (Int, Int) -> Int
+plus (x, y) = x + y
+```
+
+Instead, the following definition could now be used:
+
+```haskell
+plus :: Int -> (Int -> Int)
+plus x y = x + y
+```
+
+A transformation of the first definition of `plus` into the second is called *currying*. For the type `Int -> (Int -> Int)` one could also write more simply `Int -> Int -> Int`, because we use the convention that the function space constructor associates `->` to the right. The function application, on the other hand, associates to the left, i.e., the expression `plus 2 3` stands for `(plus 2) 3` (`(plus 2)` is a function that is applied to $3$).
+
+Now `plus` gets two arguments one after the other. More precisely, `plus` is now a function that receives an integer `x` as input. The result is then the function `plus x`. This is a function from `Int` to `Int`, where `(plus x) y` calculates the addition of `x` and `y`.
+
+Such functions can also be called with only one argument (this is also called *partial application*). For example, the function `plus 1` is the successor function which increases numbers by $1$ and `plus 0` is the identity function on integers. This possibility of application to a smaller number of arguments is (besides the saving of parentheses) the second advantage of currying. Altogether the grammar rule for left-hand sides of defining equations changes as follows:
+
+$\text{\underline{funlhs}} \rightarrow \text{\underline{var} } \text{\underline{pat}}_1 \ldots \text{\underline{pat}}_n \text{, where } n \geq 1$
+
+#### Function Definition Through Pattern Matching
+
+The arguments on the left side of a defining equation need not be variables in general, but they may be arbitrary patterns that serve as patterns for the expected value. Let us consider the function `und` (German for "and"), which calculates the conjunction of Boolean values.
+
+```haskell
+und :: Bool -> Bool -> Bool
+und True  y = y
+und False y = False
+```
+
+So, in particular, we now have multiple function declarations (i.e. defining equations) for the same function symbol.
+
+Here, `True` and `False` are predefined data constructors of the `Bool` data type, i.e., they are used to construct the objects of this data type. Constructors in Haskell always begin with capital letters.
+
+To determine which defining equation is to be applied to a function call `und` $\text{\underline{exp}}_1$ $\text{\underline{exp}}_2$, one tests in sequence from top to bottom which patterns match the current arguments $\text{\underline{exp}}_1$ and $\text{\underline{exp}}_2$ (this is called "matching"). So the question is whether there is a substitution that replaces the variables of the patterns with concrete expressions, so that, thereby, the instantiated patterns match $\text{\underline{exp}}_1$ and $\text{\underline{exp}}_2$. In this case, we also say that the pattern $\text{\underline{pat}}_i$ (at) "matches" the expression $\text{\underline{exp}}_i$. Then the total expression is evaluated to the corresponding instantiated right-hand side. So, for example, `und True True` evaluates to `True`, because in the substitution `[y/True]` the patterns `True` and `y` of the first defining equation match the current arguments `True` and `True`.
+
+Since patterns are evaluated from top to bottom, the definition of `and` is equivalent to the following alternative declaration:
+
+```haskell
+und :: Bool -> Bool -> Bool
+und True y = y
+und x    y = False
+```
+
+When we have a function:
+
+```haskell
+unclear :: Int -> Bool
+unclear x = not (unclear x)
+```
+
+whose evaluation does not terminate, the evaluation of `und False (unclear 0)` terminates anyway, because `unclear 0` does not have to be evaluated to perform pattern matching. On the other hand, `und (unclear 0) False` or `und True (unclear 0)` do not terminate.
