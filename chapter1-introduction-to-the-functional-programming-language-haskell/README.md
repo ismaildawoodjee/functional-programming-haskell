@@ -48,11 +48,11 @@ square x = x * x
 
 The left side of a defining equation consists of the name of the function and the description of the argument and the right side defines the result of the function. Here the types of the arguments and the results must naturally "fit" the type of the function (i.e., `square` may only get expressions of the type `Int` both as argument and as result). Basic arithmetic operations like `+`, `*`, `-`, `/`, etc. as well as comparison operations like `==` (for equality), `>=`, etc. are predefined in Haskell. The data structure `Bool` with the values `True` and `False` and the functions `not`, `&&` and `||` is also predefined. Libraries are used to define such frequently used functions. The functions mentioned above are defined in a standard library (the so-called "prelude"), which is loaded every time Haskell is started. In general, function declarations are structured as follows.
 
-$\text{\underline{fundecl}} \rightarrow \text{\underline{funlhs} } \text{\underline{rhs}}$
+$\underline{\text{fundecl}} \rightarrow \underline{\text{funlhs} } \underline{\text{rhs}}$
 
-$\text{\underline{funlhs}} \rightarrow \text{\underline{var} } \text{\underline{pat}}$
+$\underline{\text{funlhs}} \rightarrow \underline{\text{var} } \underline{\text{pat}}$
 
-$\text{\underline{rhs}} \rightarrow \text{= \underline{exp}}$
+$\underline{\text{rhs}} \rightarrow \underline{= \text{exp}}$
 
 Here `var` stands for the function name (like `square`) and `pat` for the argument on the left side of the defining equation (like `x`). How such arguments may look in the general case is explained in Section 1.1.3. The right side of a defining equation is an arbitrary expression `exp` (like `x * x`).
 
@@ -108,11 +108,11 @@ maxi(x, y) | x >= y    = x
            | otherwise = y
 ```
 
-The expression on the right side of a defining equation can thus be restricted by a condition (i.e. an expression of the type `Bool`). For evaluation, one then uses the first equation whose condition is satisfied (but the case distinction in the equations need not be complete). The expression `otherwise` is a predefined function that always returns `True`. So the grammar rule for the formation of right sides of $\text{\underline{rhs}}$ defining equations must now be changed as follows:
+The expression on the right side of a defining equation can thus be restricted by a condition (i.e. an expression of the type `Bool`). For evaluation, one then uses the first equation whose condition is satisfied (but the case distinction in the equations need not be complete). The expression `otherwise` is a predefined function that always returns `True`. So the grammar rule for the formation of right sides of $\underline{\text{rhs}}$ defining equations must now be changed as follows:
 
-$\text{\underline{rhs}} \rightarrow \text{= \underline{exp} }_1 \ldots \text{ \underline{exp} }_n \text{, where } n \geq 1$
+$\underline{\text{rhs}} \rightarrow \underline{= \text{exp} }_1 \ldots \underline{ \text{exp} }_n \underline{, where } n \geq 1$
 
-$\text{\underline{condrhs}} \rightarrow \text{| \underline{exp} = \underline{exp}}$
+$\underline{\text{condrhs}} \rightarrow \underline{| \text{exp} = \text{exp}}$
 
 #### Currying
 
@@ -136,7 +136,7 @@ Now `plus` gets two arguments one after the other. More precisely, `plus` is now
 
 Such functions can also be called with only one argument (this is also called *partial application*). For example, the function `plus 1` is the successor function which increases numbers by $1$ and `plus 0` is the identity function on integers. This possibility of application to a smaller number of arguments is (besides the saving of parentheses) the second advantage of currying. Altogether the grammar rule for left-hand sides of defining equations changes as follows:
 
-$\text{\underline{funlhs}} \rightarrow \text{\underline{var} } \text{\underline{pat}}_1 \ldots \text{\underline{pat}}_n \text{, where } n \geq 1$
+$\underline{\text{funlhs}} \rightarrow \underline{\text{var} } \underline{\text{pat}}_1 \ldots \underline{\text{pat}}_n \underline{, where } n \geq 1$
 
 #### Function Definition Through Pattern Matching
 
@@ -152,7 +152,7 @@ So, in particular, we now have multiple function declarations (i.e. defining equ
 
 Here, `True` and `False` are predefined data constructors of the `Bool` data type, i.e., they are used to construct the objects of this data type. Constructors in Haskell always begin with capital letters.
 
-To determine which defining equation is to be applied to a function call `und` $\text{\underline{exp}}_1$ $\text{\underline{exp}}_2$, one tests in sequence from top to bottom which patterns match the current arguments $\text{\underline{exp}}_1$ and $\text{\underline{exp}}_2$ (this is called "matching"). So the question is whether there is a substitution that replaces the variables of the patterns with concrete expressions, so that, thereby, the instantiated patterns match $\text{\underline{exp}}_1$ and $\text{\underline{exp}}_2$. In this case, we also say that the pattern $\text{\underline{pat}}_i$ (at) "matches" the expression $\text{\underline{exp}}_i$. Then the total expression is evaluated to the corresponding instantiated right-hand side. So, for example, `und True True` evaluates to `True`, because in the substitution `[y/True]` the patterns `True` and `y` of the first defining equation match the current arguments `True` and `True`.
+To determine which defining equation is to be applied to a function call `und` $\underline{\text{exp}}_1$ $\underline{\text{exp}}_2$, one tests in sequence from top to bottom which patterns match the current arguments $\underline{\text{exp}}_1$ and $\underline{\text{exp}}_2$ (this is called "matching"). So the question is whether there is a substitution that replaces the variables of the patterns with concrete expressions, so that, thereby, the instantiated patterns match $\underline{\text{exp}}_1$ and $\underline{\text{exp}}_2$. In this case, we also say that the pattern $\underline{\text{pat}}_i$ (at) "matches" the expression $\underline{\text{exp}}_i$. Then the total expression is evaluated to the corresponding instantiated right-hand side. So, for example, `und True True` evaluates to `True`, because in the substitution `[y/True]` the patterns `True` and `y` of the first defining equation match the current arguments `True` and `True`.
 
 Since patterns are evaluated from top to bottom, the definition of `and` is equivalent to the following alternative declaration:
 
@@ -175,7 +175,7 @@ In the `und` function, pattern matching succeeds because a value of type `Bool` 
 
 $^1$ The grammar rules for `Bool` and `[a]` are used here only to illustrate pattern matching and are not part of the Haskell language definition.
 
-$\text{\underline{Bool} } \rightarrow \text{ }$ `True | False`
+$\underline{\text{Bool} } \rightarrow \underline{ }$ `True | False`
 
 However, pattern matching is also possible for other data types. To show how pattern matching can be used with lists, we again consider the algorithm `len`.
 
@@ -187,7 +187,7 @@ len (x : xs) = 1 + len xs
 
 The predefined data structure of the lists has the data constructors `[]` and `:`, so that lists are formed as follows:
 
-$\underline{[a]} \rightarrow$`[] | a : [a]`
+$\text{[a]} \rightarrow$`[] | a : [a]`
 
 Here `[]` stands for the empty list and the (infix) constructor "`:`" is used to build non-empty lists. As mentioned, the expression `x:xs` stands for the list `xs`, in which the element `x` was inserted in front. The element `x` here has a type `a` and `xs` is a list of elements of type `a`. (The grammar thus specifies how lists of type `[a]` are formed).
 
@@ -230,21 +230,21 @@ Here `float` is the predefined type for floating point numbers.
 
 In general, an expression may be assigned to any pattern. In the simplest case, a pattern is a variable. Otherwise it is an expression such as `(x0, y0)`, so that when a value such as `(1,2)` is assigned to this expression, it is clear which values are assigned to the individual variable identifiers. A pattern binding may occur only once for each identifier (whereas function bindings may occur multiple times - with different patterns for the arguments).
 
-So we now extend the possibilities for declarations $\text{\underline{decl}}$ with pattern declarations as follows:
+So we now extend the possibilities for declarations $\underline{\text{decl}}$ with pattern declarations as follows:
 
-$\text{\underline{decl}} \rightarrow \text{\underline{typedecl} | \underline{fundecl} | \underline{patdecl}}$
+$\underline{\text{decl}} \rightarrow \underline{\text{typedecl} | \text{fundecl} | \text{patdecl}}$
 
-$\text{\underline{patdecl}} \rightarrow \text{\underline{pat} \underline{rhs}}$
+$\underline{\text{patdecl}} \rightarrow \underline{\text{pat} \text{rhs}}$
 
 #### Local Declarations
 
-Local declarations are used to create another local declaration block within a declaration. In each right-hand side of a function or pattern declaration, you can specify a sequence of local declarations after the `where` keyword, which refer only to this right-hand side. External declarations of the same identifier are covered by the local declaration. The grammar rules for $\text{\underline{fundecl}}$ and $\text{\underline{patdecl}}$ are therefore changed as follows. Here, square brackets in the grammar mean that the expressions inside are optional.
+Local declarations are used to create another local declaration block within a declaration. In each right-hand side of a function or pattern declaration, you can specify a sequence of local declarations after the `where` keyword, which refer only to this right-hand side. External declarations of the same identifier are covered by the local declaration. The grammar rules for $\underline{\text{fundecl}}$ and $\underline{\text{patdecl}}$ are therefore changed as follows. Here, square brackets in the grammar mean that the expressions inside are optional.
 
-$\text{\underline{fundecl}} \rightarrow \text{\underline{funlhs} \underline{rhs}} [\texttt{where} \text{ \underline{decls}}]$
+$\underline{\text{fundecl}} \rightarrow \underline{\text{funlhs} \text{rhs}} [\underline{where} \underline{ \text{decls}}]$
 
-$\text{\underline{patdecl}} \rightarrow \text{\underline{pat} \underline{rhs}} [\texttt{where} \text{ \underline{decls}}]$
+$\underline{\text{patdecl}} \rightarrow \underline{\text{pat} \text{rhs}} [\underline{where} \underline{ \text{decls}}]$
 
-$\text{\underline{decls}} \rightarrow \{ \text{\underline{decl}}_1; \ldots; \text{\underline{decl}}_n\} \text{, where } n \geq 0$
+$\underline{\text{decls}} \rightarrow \{ \underline{\text{decl}}_1; \ldots; \underline{\text{decl}}_n\} \underline{, where } n \geq 0$
 
 As an example, consider the following program that calculates the solutions of a quadratic equation using the following formula:
 
@@ -266,7 +266,7 @@ where `^d` is a pointer to a memory cell with the expression `sqrt (5*5 - 4*1*3)
 
 To avoid parentheses and to increase readability, Haskell has the so-called *Offside-Rule* for writing (local) declarations:
 
-$1.$ The first symbol in a $\text{\underline{decls}}$ collection of declarations determines the left margin of the declaration block.
+$1.$ The first symbol in a $\underline{\text{decls}}$ collection of declarations determines the left margin of the declaration block.
 
 $2.$ A new line that starts at this left margin is a new declaration in this block.
 
@@ -283,9 +283,9 @@ for
 d = sqrt (b*b - 4*a*c)
 ```
 
-$4.$ A new line starting further to the left than the left margin means that the $\text{\underline{decls}}$ block is finished and it is no longer part of this collection of declarations.
+$4.$ A new line starting further to the left than the left margin means that the $\underline{\text{decls}}$ block is finished and it is no longer part of this collection of declarations.
 
-So $\text{\underline{decls}}$ can also be written like an indented program (i.e., as a sequence of declarations that are left-bundled below each other). For example, the declaration of roots could also be written as follows:
+So $\underline{\text{decls}}$ can also be written like an indented program (i.e., as a sequence of declarations that are left-bundled below each other). For example, the declaration of roots could also be written as follows:
 
 ```haskell
 roots a b c = ((-b - d)/e, (-b + d)/e)
