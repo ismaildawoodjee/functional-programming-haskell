@@ -42,6 +42,24 @@ undGeneral x y = False
 unclear :: Int -> Bool
 unclear x = not (unclear x)
 
+-- recursive definition of length function
+len :: [Int] -> Int
+len [] = 0
+len (x : xs) = 1 + len xs
+
+-- find the second element of a list
+second :: [Int] -> Int
+second [] = 0
+second [x] = 0
+second (x : y : xs) = y
+
+-- Quadratic function solver (coefficient variables are curried), returning a tuple of roots
+roots :: Float -> Float -> Float -> (Float, Float)
+roots a b c = ((- b - d) / e, (- b + d) / e)
+  where
+    d = sqrt (b * b - 4 * a * c)
+    e = 2 * a
+
 -- Main function. Compile with `ghc chapter1.hs` and execute chapter1.exe
 -- Alternatively, use interactive GHC with `ghci chapter1.hs`. Quit GHCi with `:quit`
 main :: IO ()
@@ -61,3 +79,9 @@ main = do
 
   -- this evaluation doesn't terminate because it is unclear what is the return value of `y`
   -- print (und True (unclear 0))
+
+  print (len [2, 4, 6, 8]) -- length is 4
+  print (second [1, 3, 5, 7, 9]) -- 2nd element is 3
+
+  -- quadratic solver
+  print (roots 1 2 (-1 * 15)) -- returns (-5.0, 3.0)

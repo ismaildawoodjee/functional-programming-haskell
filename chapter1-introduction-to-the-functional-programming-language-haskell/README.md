@@ -170,3 +170,129 @@ unclear x = not (unclear x)
 ```
 
 whose evaluation does not terminate, the evaluation of `und False (unclear 0)` terminates anyway, because `unclear 0` does not have to be evaluated to perform pattern matching. On the other hand, `und (unclear 0) False` or `und True (unclear 0)` do not terminate.
+
+In the `und` function, pattern matching succeeds because a value of type `Bool` can only be formed with the data constructors `True` or `False`. Boolean values are thus constructed using the following rule$^1$.
+
+$^1$ The grammar rules for `Bool` and `[a]` are used here only to illustrate pattern matching and are not part of the Haskell language definition.
+
+$\text{\underline{Bool} } \rightarrow \text{ }$ `True | False`
+
+However, pattern matching is also possible for other data types. To show how pattern matching can be used with lists, we again consider the algorithm `len`.
+
+```haskell
+len :: [a]  -> Int
+len []       = 0
+len (x : xs) = 1 + len xs
+```
+
+The predefined data structure of the lists has the data constructors `[]` and `:`, so that lists are formed as follows:
+
+$\underline{[a]} \rightarrow$`[] | a : [a]`
+
+Here `[]` stands for the empty list and the (infix) constructor "`:`" is used to build non-empty lists. As mentioned, the expression `x:xs` stands for the list `xs`, in which the element `x` was inserted in front. The element `x` here has a type `a` and `xs` is a list of elements of type `a`. (The grammar thus specifies how lists of type `[a]` are formed).
+
+When evaluating `len [15,70,36]`, the list shorthand is first resolved. So the argument of `len` is `15:(70:(36:[]))`. Now pattern matching is performed starting with the first defining equation. The first data constructor `[]` does not match the constructor "`:`" used to form the current argument. But the pattern of the second defining equation matches this value, using the substitution $[$ `x/15, xs/70 (36:[])` $]$. So this expression evaluates in the first step to `1 + len (70:(36:[]))`, etc.
+
+Analogously, one could also define the following algorithm:
+
+```haskell
+second :: [Int]  -> Int
+second []           = 0
+second (x : [])     = 0
+second (x : y : xs) = y
+```
+
+One may also use the list shorthand notation in these patterns and replace the second equation by `second [x] = 0`. It should be mentioned that in Haskell no completeness of the defining equations is required.
+
+#### Pattern Declarations
+
+Not only functions, but also other values can be specified in declarations:
+
+```haskell
+pin :: Float
+pin = 3.14159
+
+suc :: Int -> Int
+suc = plus 1
+
+x0, y0 :: Int
+(x0,y0) = (1,2)
+
+x1, y1 :: Int
+[x1,y1] = [1,2]
+
+x2 :: Int
+y2 :: [Int]
+x2:y2 = [1,2]
+```
+
+Here `float` is the predefined type for floating point numbers.
+
+In general, an expression may be assigned to any pattern. In the simplest case, a pattern is a variable. Otherwise it is an expression such as `(x0, y0)`, so that when a value such as `(1,2)` is assigned to this expression, it is clear which values are assigned to the individual variable identifiers. A pattern binding may occur only once for each identifier (whereas function bindings may occur multiple times - with different patterns for the arguments).
+
+So we now extend the possibilities for declarations $\text{\underline{decl}}$ with pattern declarations as follows:
+
+$\text{\underline{decl}} \rightarrow \text{\underline{typedecl} | \underline{fundecl} | \underline{patdecl}}$
+
+$\text{\underline{patdecl}} \rightarrow \text{\underline{pat} \underline{rhs}}$
+
+#### Local Declarations
+
+Local declarations are used to create another local declaration block within a declaration. In each right-hand side of a function or pattern declaration, you can specify a sequence of local declarations after the `where` keyword, which refer only to this right-hand side. External declarations of the same identifier are covered by the local declaration. The grammar rules for $\text{\underline{fundecl}}$ and $\text{\underline{patdecl}}$ are therefore changed as follows. Here, square brackets in the grammar mean that the expressions inside are optional.
+
+$\text{\underline{fundecl}} \rightarrow \text{\underline{funlhs} \underline{rhs}} [\texttt{where} \text{ \underline{decls}}]$
+
+$\text{\underline{patdecl}} \rightarrow \text{\underline{pat} \underline{rhs}} [\texttt{where} \text{ \underline{decls}}]$
+
+$\text{\underline{decls}} \rightarrow \{ \text{\underline{decl}}_1; \ldots; \text{\underline{decl}}_n\} \text{, where } n \geq 0$
+
+As an example, consider the following program that calculates the solutions of a quadratic equation using the following formula:
+
+$ax^2 + bx + c = 0 \iff x = \frac{-b \plusmn \sqrt{b^2 - 4ac}}{2a}$
+
+```haskell
+roots :: Float -> Float -> Float -> (Float, Float)
+roots a b c = ((-b - d)/e, (-b + d)/e)
+              where { d = sqrt (b*b - 4*a*c); e = 2*a }
+```
+
+An important advantage of local declarations is that the values declared in them are computed only once. The call to `roots 1 5 3` therefore generates a graph
+
+```haskell
+((-5 - ^d)/ ^e, (-5 + ^d)/ ^e),
+```
+
+where `^d` is a pointer to a memory cell with the expression `sqrt (5*5 - 4*1*3)` and `^e` is a pointer to `2*1`. So these two expressions have to be evaluated only once and you can avoid multiple evaluations of the same expressions.
+
+To avoid parentheses and to increase readability, Haskell has the so-called *Offside-Rule* for writing (local) declarations:
+
+$1.$ The first symbol in a $\text{\underline{decls}}$ collection of declarations determines the left margin of the declaration block.
+
+$2.$ A new line that starts at this left margin is a new declaration in this block.
+
+$3.$ A new line that starts further to the right than this left margin belongs to the same declaration (i.e., it is the continuation of the line above). For example,
+
+```haskell
+d = sqrt (b*b - 
+          4*a*c)
+```
+
+for
+
+```haskell
+d = sqrt (b*b - 4*a*c)
+```
+
+$4.$ A new line starting further to the left than the left margin means that the $\text{\underline{decls}}$ block is finished and it is no longer part of this collection of declarations.
+
+So $\text{\underline{decls}}$ can also be written like an indented program (i.e., as a sequence of declarations that are left-bundled below each other). For example, the declaration of roots could also be written as follows:
+
+```haskell
+roots a b c = ((-b - d)/e, (-b + d)/e)
+              where d = sqrt (b*b - 4*a*c)
+                    e = 2*a 
+```
+
+#### Operators and Infix Declarations
+
+Some functions should be used in infix not prefix notation to increase the readability of programs. Examples are `+, *, ==` or the list constructor `:` which is used to insert elements into lists. Such function symbols are called *operators*. As with the prefix symbols, a distinction is made between variables and constructors. The latter do not receive a function declaration, but are used to represent objects of a data structure. Operators are represented in Haskell by sequences of special characters. Constructor operators (like `:`) start with a colon and variable operators (like `+` or `==`) start with another character.
