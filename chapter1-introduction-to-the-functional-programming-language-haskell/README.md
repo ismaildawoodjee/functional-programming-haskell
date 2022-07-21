@@ -296,3 +296,52 @@ roots a b c = ((-b - d)/e, (-b + d)/e)
 #### Operators and Infix Declarations
 
 Some functions should be used in infix not prefix notation to increase the readability of programs. Examples are `+, *, ==` or the list constructor `:` which is used to insert elements into lists. Such function symbols are called *operators*. As with the prefix symbols, a distinction is made between variables and constructors. The latter do not receive a function declaration, but are used to represent objects of a data structure. Operators are represented in Haskell by sequences of special characters. Constructor operators (like `:`) start with a colon and variable operators (like `+` or `==`) start with another character.
+
+Any infix operator can be converted to a prefix function by bracketing. Thus one can write `(+) 2 3` instead of `2 + 3`. Similarly, any two-digit prefix function (with a type of $\underline{\text{type}}_1 \rightarrow \underline{\text{type}}_2 \rightarrow \underline{\text{type}}_3$) can be converted to an infix operator by using "backquotes". Thus, one can write `2 'plus' 3` instead of `plus 2 3`. In this respect, the use of infix operators really just means a different notation. We will therefore only ever discuss prefix functions in the following definitions of the syntax. However, the use of the alternative notation with infix operators is often helpful in concrete programs. Two properties are important for infix operators:
+
+$1.$ *Association*
+
+Let's consider the following algorithm:
+
+```haskell
+divide :: Float -> Float -> Float
+divide x y = x/y
+```
+
+In the expression,
+
+```haskell
+36 `divide` 6 `divide` 2
+```
+
+it is not clear at first whether the result is $3$ or $12$. For this one must specify to which side the operator `'divide'` associates. Therefore one can declare the association for infix operators. If `divide` is to associate to the left, then one adds the declaration as:
+
+```haskell
+infixl `divide`
+```
+
+This is also the default for operators in Haskell. In this case the above expression stands for
+
+```haskell
+(36 `divide` 6) `divide` 2
+```
+
+and the result is therefore $3$. If, on the other hand, we declare
+
+```haskell
+infixr `divide`,
+```
+
+so `'divide'` associates to the right. The above expression then stands for `36 'divide' (6 'divide' 2)`, resulting in $12$. A third possibility is the declaration
+
+```haskell
+infix `divide`.
+```
+
+This means that `'divide'` has no association at all. Then the expression `36 'divide' 6 'divide' 2` leads to an error message.
+
+We have already learned about the concept of association in the function space constructor and function application. As mentioned, the function space constructor associates $\rightarrow$ to the right, i.e., `Int -> Int -> Int` stands for `Int -> (Int -> Int)`. The function application associates to the left. Thus, an expression like `square square 3` would stand for `(square square) 3`, i.e., for a non-type correct expression leading to an error message.
+
+$2. $ *Binding Priority*
+
+We define the following two functions.
