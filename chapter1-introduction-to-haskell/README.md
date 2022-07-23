@@ -380,3 +380,9 @@ Finally, it should be mentioned that operators (similar to prefix functions) can
 In summary, the following grammar is used to generate declarations in Haskell.
 
 ![Summary of grammer rules for generating declarations in Haskell](./../images/eq-pg21-1.png)
+
+$\underline{\text{var}} \rightarrow$ String of letters and numbers with lowercase letters at the beginning
+
+$\underline{\text{varop}} \rightarrow$ String of special characters that does not begin with `:`
+
+$\underline{\text{constrop}} \rightarrow$  String of special characters starting with `:`
