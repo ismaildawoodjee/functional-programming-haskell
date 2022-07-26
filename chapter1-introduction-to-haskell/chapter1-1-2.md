@@ -38,3 +38,36 @@ one can therefore also write the following:
 ```haskell
 maxi(x, y) = if x >= y then x else y
 ```
+
+* $\texttt{let} \text{ } \underline{\text{decls}} \text{ } \texttt{in} \text{ } \underline{\text{exp}}$: In this expression a local declaration sequence $\underline{\text{decls}}$ is defined for the expression $\underline{\text{exp}}$. This is analogous to the local declaration using $\texttt{where}$, except now the local declaration is prefixed instead of suffixed. Instead of
+
+```haskell
+roots a b c = ((-b - d)/e, (-b + d)/e)
+              where d = sqrt (b*b - 4*a*c)
+                    e = 2*a
+```
+
+you can therefore also write the following:
+
+```haskell
+roots a b c = let d = sqrt (b*b - 4*a*c)
+                  e = 2*a
+              in ((-b - d)/e, (-b + d)/e)
+```
+
+* $\texttt{case } \underline{\text{exp}} \texttt{ of } \{ \underline{\text{pat}}_1 \rightarrow \underline{\text{exp}}_1 ; \ldots ; \underline{\text{pat}}_n \rightarrow \underline{\text{exp}}_n \}, \text{ where } n \geq 1$: When evaluating this expression, an attempt is made to match the pattern $\underline{\text{pat}}_1$ to the expression $\underline{\text{exp}}$. If this succeeds, the result is the expression $\underline{\text{exp}}_1$ , where the variables are instantiated with the matching substitution used. Otherwise, an attempt is then made to match the pattern $\underline{\text{pat}}_2$ to $\underline{\text{exp}}$, and so on. Here again the offside rule for notation can be used. Instead of
+
+```haskell
+und True  y = y
+und False y = False
+```
+
+you can therefore also write the following:
+
+```haskell
+und x y = case x
+            of True  -> y
+               False -> False
+```
+
+Moreover, instead of the expressions $\underline{\text{exp}}_i$ one can also use sequences of conditional expressions $\texttt{| } \underline{\text{exp}} \rightarrow \underline{\text{exp}}$ and, in addition, in each alternative of the `case` expressions, it is possible to match local declarations with `where`.
