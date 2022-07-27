@@ -71,3 +71,39 @@ und x y = case x
 ```
 
 Moreover, instead of the expressions $\underline{\text{exp}}_i$ one can also use sequences of conditional expressions $\texttt{| } \underline{\text{exp}} \rightarrow \underline{\text{exp}}$ and, in addition, in each alternative of the `case` expressions, it is possible to match local declarations with `where`.
+
+* $\ \underline{\text{pat}}_1 \ldots \underline{\text{pat}}_n \rightarrow \underline{\text{exp}}, \text{ where } n \geq 1$: Such an expression is called a "lambda expression" or "lambda abstraction" because the character `\` (backslash) represents the Greek letter $\lambda$. The value of this expression is the function that takes the arguments $underline{\text{pat}}_1 \ldots \underline{\text{pat}}_n$ to $\underline{\text{exp}}$. For example, `\x -> 2 * x` is the function that takes an argument and doubles it. Its type is `Int -> Int`. Thus, "lambda" is used to form so-called "unnamed/anonymous functions" that can only be used at the point of their definition. The expression
+
+```haskell
+(\x -> 2 * x) 5
+```
+
+therefore evaluates to $10$. The function `\x y -> x + y` is the addition function of the type `Int -> Int -> Int`. In general, the expression $\ \underline{\text{pat}}_1 \ldots \underline{\text{pat}}_n \rightarrow \underline{\text{exp}}$ has the type $\underline{\text{type}}_1 \rightarrow \ldots \rightarrow \underline{\text{type}}_n \rightarrow \underline{\text{type}}$, if $\underline{\text{pat}}_i$ has the type $\underline{\text{type}}_i$ and $\underline{\text{exp}}$ has the type $\underline{\text{type}}$, respectively. For lambda expressions, arbitrary patterns are possible, i.e., one can also form expressions like `\(x, y) -> x + y` of type `(Int, Int) -> Int`. The lambda expressions show that functions in functional programming languages are really equal data objects, because they can now be completely described by suitable expressions.
+
+Instead of the function declaration
+
+```haskell
+plus x y = x + y
+```
+
+you can also write
+
+```haskell
+plus = \x y -> x + y
+```
+
+or
+
+```haskell
+plus x = \y -> x + y
+```
+
+can also be defined.
+
+#### Summary of Syntax for Expressions
+
+In summary, the following are the grammar syntax rules for expressions in Haskell:
+
+![Summary of grammer rules for expressions in Haskell](./../images/eq-pg25-1.png)
+
+$\underline{\text{constr}} \rightarrow$ String of letters and numbers with capital letters at the beginning.
