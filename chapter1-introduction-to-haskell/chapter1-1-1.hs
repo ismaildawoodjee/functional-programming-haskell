@@ -60,6 +60,23 @@ roots a b c = ((- b - d) / e, (- b + d) / e)
     d = sqrt (b * b - 4 * a * c)
     e = 2 * a
 
+-- division function associating to the left
+divide :: Float -> Float -> Float
+divide x y = x / y
+
+infixl 9 `divide` -- infixr 9 `divide`
+
+-- infix addition and subtraction functions
+(%%) :: Int -> Int -> Int
+x %% y = x + y
+
+(@@) :: Int -> Int -> Int
+x @@ y = x * y
+
+-- this binding priority prioritizes %% over @@ (%% has higher binding priority than @@)
+infixl 9 %%
+infixl 8 @@
+
 -- Main function. Compile with `ghc chapter1.hs` and execute chapter1.exe
 -- Alternatively, use interactive GHC with `ghci chapter1.hs`. Quit GHCi with `:quit`
 main :: IO ()
@@ -85,3 +102,9 @@ main = do
 
   -- quadratic solver
   print (roots 1 2 (-1 * 15)) -- returns (-5.0, 3.0)
+
+  -- division function associating to the left
+  print (36 `divide` 6 `divide` 2) -- returns 3 (if infixr, then it returns 12)
+
+  -- returns 9 if %% has the higher binding priority, 7 otherwise
+  print (1 %% 2 @@ 3)
