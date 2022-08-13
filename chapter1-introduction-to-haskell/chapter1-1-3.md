@@ -36,3 +36,72 @@ An example of the use of pattern matching in pattern declarations is
 ```haskell
 let x:xs = [1,2,3] in xs
 ```
+
+Here `x:xs` is a pattern matched on the expression `[1,2,3]`. The matching is successful on the substitution `[ x/1, xs/[2,3] ]`. The expression above is therefore evaluated to [2,3].
+
+One restriction on patterns is that they must be linear, i.e., no variable may occur more than once in a pattern. The reason for this is that otherwise not all evaluation strategies would give the same result. For example, one could then declare the following function.
+
+```haskell
+equal :: [Int] -> [Int] -> Bool
+equal xs xs     = True
+equal xs (x:xs) = False
+```
+
+The expression `equal zeros zeros` could now be evaluated to both `True` and `False` depending on the evaluation strategy. In general, a pattern $\underline{\text{pat}}$ can have the following forms:
+
+* $\underline{\text{var}}$: Each variable identifier is also a pattern. This pattern matches any value, binding the variable to that value when matching. An example of a function declaration where such a pattern is used is
+
+```haskell
+square x = x * x
+```
+
+* `_`: The underscore character `_` is the wildcard (joker) pattern. It also matches any value, but there is no variable binding. The joker `_` may therefore occur several times in a pattern. For example, the function `and` can also be defined as follows:
+
+```haskell
+und True y = y
+und _ _    = False
+```
+
+* $\underline{\text{integer}}$ or $\underline{\text{float}}$ or $\underline{\text{char}}$ or $\underline{\text{string}}$: These patterns only match themselves and there is no variable binding during matching.
+
+* $(\underline{\text{constr}} \text{ } \underline{\text{pat}}_1 \ldots \underline{\text{pat}}_n), \text{where } n \geq 0$: Here `constr` is an $n$-character data constructor. This pattern matches values formed with the same data constructor if each $\underline{\text{pat}}_i$ matches the $i$-th argument of the value. We have seen examples of this in the declaration of the algorithms `and`, `len` and `append`. (Here `:` is an infix constructor, so it is not on the outside. (You can also write `((:) x xs)` instead). As usual, we omit parentheses where possible to improve readability.
+
+* $\underline{\text{var}}@\underline{\text{pat}}$: This pattern behaves like $\underline{\text{pat}}$, but if $\underline{\text{pat}}$ matches the expression to be matched, the variable $\underline{\text{var}}$ is additionally bound to the entire expression. As an example, consider the following function that copies the first element of a list.
+
+```haskell
+f [] = []
+f (x : xs) = x : x : xs
+```
+
+So now, instead of the second defining equation, one could also use the following equation.
+
+```haskell
+f y@(x : xs) = x : y
+```
+
+* $[\underline{\text{pat}}_1, \ldots, \underline{\text{pat}}_n], \text{ where } n \geq 0$: Such a pattern matches lists of length $n$ if $\underline{\text{pat}}_i$ matches the $i$-th element of the list. The following example is used to recognize lists of length $3$:
+
+```haskell
+has_length_three :: [Int] -> Bool
+has_length_three [_,_,_] = True
+has_length_three _       = False
+```
+
+* $(\underline{\text{pat}}_1, \ldots, \underline{\text{pat}}_n), \text{ where } n \geq 0$: Analogously, such a tuple pattern matches tuples with $n$ components if $\underline{\text{pat}}_i$ matches the $i$-th component of the tuple in each case. The pattern `()` only matches the value `()`. Through this, one can define `maxi` alternatively as follows:
+
+```haskell
+maxi :: (Int, Int) -> Int
+maxi (0,y)     = y
+maxi (0,x)     = x
+maxi (x,y) = 1 + maxi (x-1,y-1)
+```
+
+In this case, a call to `maxi` with negative values naturally leads to non-termination.
+
+So, in general, any linear term consisting of data constructors and variables is a pattern.
+
+#### Summary of Syntax for Patterns
+
+We get the following rules for constructing patterns.
+
+![Summary of syntax for patterns in Haskell](./../images/eq-pg27-1.png)
